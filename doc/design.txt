@@ -1,0 +1,28 @@
+Please compile the Doxygen documentation for the comprehensive code-level documentation of all public interfaces.
+
+The following are a few of higher-level details of the design of the program.
+
+Cache eviction policy is least-recentry used. 
+Such a policy is most generic when no assumptions are made regarding the data flow, and is yet quite performant (all operations are O(1) albeit a heavy constant).
+
+As threading is concerned, the synchronization becomes the bottleneck (especially with small items such as those in the example).
+Hence some effort was taken to reduce the synchronization overhead as much as possible:
+Item handle storage, items themselves, and the item file are all locked separately. 
+That allows to retrieve and modify an item in constant time regardless of the cache size (no item read/write is made under the global lock).
+Similarly, file read, write operations, being the heaviest operations but not always required (unless, for the latter, the realtime_consistent policy is requested), do not affect performance of the cache.
+
+Without the realtime_consistent policy, file writes are only executed once the cache item handles are destroyed, which allows for unlimited modifications of items in-cache without the need for much heavier file write operations.
+This reduced the number of file writes to the bare minimum.
+Such a strategy works perfectly as long as the only program using the cache uses the file, so no realtime updates are required in the file for third parties, AND the program running the cache cannot be terminated abnormally thus bypassing its destructors.
+
+Write-heavy versus read-heavy cases are differentiated with the use of standard std::mutexes (which are not necessarily system mutexes but often optimized with attempts to use spinlocks) versus read-write locks (which are always much heavier for dominantly unique locking).
+The latter will also generally occupy more memory, which is essential when lock-free optimization for operations on items is unavailable (as each item in the cache will be coupled with its own shared mutex object).
+The lock policy is abstract, transitional and used in different parts of the code.
+
+The program was written without use of C++17 and third-party libraries, which drove certain, sometimes weird, micro-design consideration.
+Those include, among others:
+  lack of untimed shared_mutexes (the timed version is used instead);
+  lack of optionals optionals;
+  structured binding (no abundance of multi-return functions);
+  lack of 'noexcept' in as part of function signatures (heavy noexcept lambda wrapper is used to parameterize noexcept functions)
+

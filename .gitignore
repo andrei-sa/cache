@@ -1,0 +1,8 @@
+build/
+**/*.swp
+**/*.swn
+**/*.swo
+**/tags
+**/CMakeFiles
+**/CMakeCache.txt
+**/Makefile

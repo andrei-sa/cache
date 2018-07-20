@@ -1,0 +1,23 @@
+By default, the main executable will be built under the name 'main' in build/runtime/.
+
+The mandatory command line options are as follows:
+./main <size_of_cache> <reader_file> <writer_file> <items_file>
+where
+size_of_cache - maximum number of items stored in the cache
+reader_file - file that lists paths to output files, one per line, for data readers
+writer_file - file that lists paths to input files, one per line, for data writers
+items_file - path to the file that stored the data
+
+For examples of reader files, writer files, and item files, check tests/data.
+
+Additionally, the program supports 3 supplementary options that can be added (in any order) as command line arguments nn.5-7:
+
+'write_heavy' - if enabled, the cache and file operations will be optimized for write-heavy use instead of the default read heavy setting
+
+'float_optimized' - if enabled, all items will be treated as 32-bit floats plus empty items (encoded by a special value of the minimal possible value of the float). 
+If some of the items cannot be parsed in such a way, an exception indicating the reason will be thrown. 
+Where the optimization is enabled, the memory use of the cache and, to a much lesser extent, data race prevention overhead will be possibly reduced by virtue of potential availability of atomic operations
+
+'realtime_consistent' - if enabled, the item file will always be consistent with the state of the cache, i.e. each write operation will be executed on the file. 
+Where the size of the cache is comparable to that of the items, use of realtime consistency can greatly reduce performance since all intermediate write operations will rewrite the file. 
+Nonetheless, realtime consistency may be essential for certain cases (if there are other users of the item file except for the only one using the cache), so the option is made available.

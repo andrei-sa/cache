@@ -1,0 +1,14 @@
+The project uses CMake.
+Both in-source and out-of-source builds are supported, yet out-of-source building is generally recommended to localize the artifacts.
+
+The code is cross-platform and can be used on any OS supporting C++14 and CMake.
+
+To proceed with the out-of-source build on Linux, go to the project directory and execute:
+> mkdir build
+> cd build
+> cmake ..
+> make -j<NUMBER_OF_BUILD_THREADS>
+
+Libraries and executables will be found in the build/runtime/ directory.
+
+In order for the unit tests to be built, GTest must be installed via CMake. In case it is, the 'tests' executable will be compiled in build/runtime/ following the steps above. Otherwise, tests will not be compiled.
