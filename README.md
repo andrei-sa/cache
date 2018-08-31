@@ -13,7 +13,9 @@ The cache can be useful in massive multi-threaded environments when memory used 
 Further documentation can be found in the doc/ folder
 
 For information on how to build the program, check doc/build.txt 
+
 For information on how to run the program, check doc/run.txt 
+
 For certain design considerations, check doc/design.txt
 
 For information on how to build the Doxygen code documentation, check
